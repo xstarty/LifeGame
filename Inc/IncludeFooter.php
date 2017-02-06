@@ -1,0 +1,1 @@
+<div class="footer" align="center"><h5>Copyright © 2017 Diddy Kao. All Rights Reserved.</h5></div>

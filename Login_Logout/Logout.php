@@ -1,5 +1,5 @@
 <?php
-	require_once($_SERVER['DOCUMENT_ROOT'] . '/Inc/IncludeGlobal.php');
+	require_once($_SERVER['DOCUMENT_ROOT'] . '/Inc/IncludeGlobal.php');	
 	
 	session_destroy();
 	

@@ -1,5 +1,5 @@
 <?php
-	require_once('Config.php');
+	require_once($_SERVER['DOCUMENT_ROOT'] . '/Inc/IncludeMySql.php');
 	require_once($_SERVER['DOCUMENT_ROOT'] . '/Inc/IncludeGlobal.php');
 	
 	$email = $_POST['email'];
@@ -16,23 +16,18 @@
 	else
 	{
 	    // Authenticate user
-	    $con = mysql_connect($db_host, $db_user, $db_pass);
-	    mysql_select_db($db_name, $con);
-	    
-	    $query = "SELECT userid, MD5(UNIX_TIMESTAMP() + userid + RAND(UNIX_TIMESTAMP()))
-	        guid FROM susers WHERE email = '$email' AND password = '$password'";
-	        
-	    $result = mysql_query($query, $con)
-	    	or die ('Error in query');
-	    
-	    if (mysql_num_rows($result))
-	    {
-	        $row = mysql_fetch_row($result);
+		$db = new DB();
+		$db->connect_db($_DB['host'], $_DB['username'], $_DB['password'], $_DB['dbname']);
+		if($db->query("SELECT userid, MD5(UNIX_TIMESTAMP() + userid + RAND(UNIX_TIMESTAMP()))
+	        guid FROM susers WHERE email = '$email' AND password = '$password'") == false)
+			exit;   	         
+	        	    
+	    if ($db->get_num_rows())
+	    {	
+	        $row = $db->get_fetch_row();
 	        // Update the user record
-	        $query = "UPDATE susers SET guid = '$row[1]' WHERE userid = $row[0]";
-	            
-	        mysql_query($query, $con)
-	        	or die('Error in query');
+	        if($db->query("UPDATE susers SET guid = '$row[1]' WHERE userid = $row[0]") == false)
+	        	exit;
 	        
 	        // Set the cookie and redirect
 	        // setcookie( string name [, string value [, int expire [, string path
@@ -43,18 +38,18 @@
 	
 	        if (empty($refer) || !$refer)
 	        {
-	        	$refer = '/index.php';            
+	        	$refer = '/index.php';
 	        }
-	
+	        	
 	        header('Location: '. $refer);     
-	        exit;
+	        exit;	        
 	    }
 	    else
-	    {
+	    {  	
 	        // Not authenticated    	
 	        //header('Location: /Login_Logout/Login.php?refer='. urlencode($refer));
 	    	header('Location: /Login_Logout/Login.php');
 	        exit;
-	    }
+	    } 	    
 	}
 ?>
